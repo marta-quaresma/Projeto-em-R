@@ -1,0 +1,52 @@
+---
+title: "Desempenho fiscal: Esforço da arrecadação de municípios mineiros com uso de dados em painel"
+author: "Marta Quaresma"
+date: "2024-10-04"
+output: html_document
+---
+# Regressão Com Dados em painel.
+
+# O primeiro passo foi instalar e carregar os pacotes necessários:
+install.packages("readxl")   # Para ler arquivos Excel
+install.packages("plm")      # Para rodar regressão com dados em painel
+install.packages("dplyr")    # Para manipulação de dados. 
+install.packages("car")      # Para calcular o VIF
+install.packages("sandwich") # Para correção de erros padrão robustos
+install.packages("lmtest")   # Para teste de Heterocedasticidade
+library(lmtest)
+library(readxl)
+library(plm)
+library(dplyr)
+library(car) 
+library(sandwich)
+
+# O Segundo passo foi Importar a base de dados, certificando que esteja tudo correto.  
+dataset <- read_excel(desempenhoDM)
+View(dataset)
+
+#Inicialmente verificou-se estatísticas descritivas dos dados.
+summary(desempenhoDM)
+
+# Para uma regressão no painel, é importante que os dados sejam organizados com variáveis de identificação (ID) e tempo (anos) portanto, a estrutura deve ser em painel.
+desempenhoDM <- pdata.frame(mesorregioes, index = c("id", "ano"))
+summary(desempenhoDM)
+
+# Optou-se por fazer a transformação dos dados para base logaritma, oferecendo maior estabilidade aos dados. 
+desempenhoDM$log_pibpc <- log(desempenhoDM$pibpc)
+desempenhoDM$log_rtpc <- log(desempenhoDM$rtpc)
+desempenhoDM$log_fpmp <- log(desempenhoDM$fpmpc)
+
+# O próximo passo foi rodar a regressão. Importante lembrar que a variável dependente foi definida como log_rtpc e variáveis idependentes log_fpmpc e log_pibpc.
+# O modelo pooling foi escolhido pois a variavel dummy desempenhara os efeitos fixos na regressão.
+modelo_pool <- plm(log_rtpc ~ log_pibpc + log_fpmp, data = desempenhoDM, model = "pooling")
+
+# Após rodar regressão, verificamos os resultados apontados:
+summary(modelo_pool)
+
+# Chegou a etapa de realizar testes estátisticos para verificar a robustez do modelo, primeiro realizou se o teste VIF para verificar multicolinearidade.
+vif_result <- vif(lm(log_rtpc ~ log_pibpc + log_fpmpc, data = desempenhoDM))
+print(vif_result)
+
+# Por fim foi é essencial realizar o teste de heterocedasticidade com modelo de Breush Pagan para verificar se os erros do modelo são homocedásticos. 
+bptest(desempenhoDM)
+
