@@ -6,3 +6,5 @@
 📈 **Resultados:** As apurações estatísticas mostraram que as transferências do FPM provocam um efeito desestimulante sobre a arrecadação dos municípios, consequentemente possuem uma representatividade maior na composição da estrutura de financiamento municipal.
 🌐 **Tecnologias:** R, Excel 
 📂 **Arquivos:** Notebooks, dataset tratado e gráficos.  
+
+Artigo do trabalho completo: https://medium.com/@marthaquaresma/desempenho-fiscal-esforço-de-arrecadação-de-municípios-mineiros-com-uso-de-dados-em-painel-d3c72e0346f6
